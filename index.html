@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Jyothis | The Gateway</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* THE SHIELD: Prevents system menus and text selection */
+        * {
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            -khtml-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+            outline: none;
+            -webkit-tap-highlight-color: transparent;
+            touch-action: none; /* Prevents scrolling while holding */
+        }
+
+        body { background-color: #050505; color: #f0f0f0; overflow: hidden; font-family: 'Courier New', Courier, monospace; }
+        
+        #static-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: url('https://upload.wikimedia.org/wikipedia/commons/5/5a/Static_noise.gif');
+            opacity: 0.12; mix-blend-mode: screen; pointer-events: none;
+        }
+
+        #orb {
+            width: 220px; height: 220px;
+            background: radial-gradient(circle, rgba(255,215,0,1) 0%, rgba(255,140,0,0.5) 40%, rgba(0,0,0,0) 70%);
+            border-radius: 50%;
+            filter: blur(25px);
+            transition: all 2.5s cubic-bezier(0.4, 0, 0.2, 1);
+            opacity: 0.25;
+            transform: scale(0.85);
+        }
+
+        .pulsing { animation: pulse 5s infinite ease-in-out; }
+        @keyframes pulse {
+            0%, 100% { transform: scale(0.85); opacity: 0.25; filter: blur(30px); }
+            50% { transform: scale(1); opacity: 0.4; filter: blur(20px); }
+        }
+
+        /* The Unlocked State */
+        .unlocked #orb {
+            opacity: 1 !important; 
+            transform: scale(1.3) !important;
+            filter: blur(8px) !important;
+            box-shadow: 0 0 120px rgba(255, 215, 0, 0.9);
+        }
+
+        #manifesto { transition: opacity 2s ease-in; opacity: 0; }
+        .unlocked #manifesto { opacity: 1; }
+    </style>
+</head>
+<body class="flex items-center justify-center h-screen">
+
+    <div id="static-overlay"></div>
+
+    <div class="text-center z-10">
+        <div id="cipher-container" class="relative flex items-center justify-center">
+            <div id="orb" class="pulsing"></div>
+            
+            <div id="fragments" class="absolute flex flex-col items-center justify-center space-y-4 pointer-events-none opacity-40">
+                <div class="h-1 w-20 bg-yellow-600 rotate-12"></div>
+                <div class="flex space-x-4">
+                    <div class="h-1 w-8 bg-yellow-600"></div>
+                    <div class="h-1 w-8 bg-yellow-600"></div>
+                </div>
+                <div class="h-1 w-20 bg-yellow-600 -rotate-6"></div>
+            </div>
+        </div>
+
+        <div id="instruction" class="mt-16 tracking-[0.3em] text-[10px] uppercase opacity-40 leading-loose">
+            Find the Still Point.<br>Hold the Light to Yield.
+        </div>
+
+        <div id="manifesto" class="hidden mt-10 max-w-xs mx-auto text-sm leading-relaxed text-yellow-100/80 p-6">
+            <p class="italic tracking-wide">"To the mind that is still,<br>the whole universe surrenders."</p>
+            <p class="mt-6 font-bold tracking-[0.4em] text-xs opacity-60">— LAO TZU</p>
+            <button onclick="startJourney()" class="mt-10 px-8 py-3 border border-yellow-700/50 text-yellow-600 text-[10px] tracking-[0.2em] hover:bg-yellow-900/20 transition-all uppercase">
+                Begin Refinement
+            </button>
+        </div>
+    </div>
+
+    <script>
+        let holdTimer;
+        const orb = document.getElementById('orb');
+        const instruction = document.getElementById('instruction');
+        const manifesto = document.getElementById('manifesto');
+        const fragments = document.getElementById('fragments');
+
+        function startHold(e) {
+            // CRITICAL: Stops the "Copy/Paste" menu from appearing
+            if (e.cancelable) e.preventDefault(); 
+            
+            if (document.body.classList.contains('unlocked')) return;
+            
+            orb.style.transition = "all 3s cubic-bezier(0.4, 0, 0.2, 1)";
+            orb.style.transform = "scale(1.4)";
+            orb.style.opacity = "0.9";
+            
+            holdTimer = setTimeout(() => {
+                unlockGateway();
+            }, 3000); 
+        }
+
+        function cancelHold() {
+            if (document.body.classList.contains('unlocked')) return;
+            clearTimeout(holdTimer);
+            orb.style.transform = "scale(0.85)";
+            orb.style.opacity = "0.25";
+        }
+
+        function unlockGateway() {
+            document.body.classList.add('unlocked');
+            fragments.style.display = 'none';
+            instruction.style.display = 'none';
+            manifesto.classList.remove('hidden');
+            
+            if (window.navigator.vibrate) {
+                window.navigator.vibrate([50, 30, 100]);
+            }
+        }
+
+        // Apply listeners to the whole body
+        document.addEventListener('touchstart', startHold, { passive: false });
+        document.addEventListener('touchend', cancelHold);
+        document.addEventListener('mousedown', startHold);
+        document.addEventListener('mouseup', cancelHold);
+
+        function startJourney() {
+            alert("The Path is open. Your first quest awaits.");
+        }
+    </script>
+</body>
+</html>
