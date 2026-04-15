@@ -3,88 +3,92 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Jyothis | The Living Altar</title>
+    <title>Jyothis | The Chrysalis</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         * { -webkit-touch-callout: none; -webkit-user-select: none; user-select: none; touch-action: none; }
-        body { background: radial-gradient(circle at center, #050505 0%, #000 100%); color: #f0e68c; overflow: hidden; font-family: 'Georgia', serif; }
+        body { background: #000; color: #f0e68c; overflow: hidden; font-family: 'Georgia', serif; }
         
         #orb {
-            width: 200px; height: 200px;
+            width: 150px; height: 150px;
             background: radial-gradient(circle, #fff7ad 0%, #ffd700 30%, #ff8c00 60%, transparent 80%);
-            border-radius: 50%; filter: blur(40px);
-            transition: all 4s ease-in-out; opacity: 0.3;
+            border-radius: 50%; filter: blur(30px);
+            transition: all 3s ease-in-out; opacity: 0.4;
         }
 
-        .pulsing { animation: breathe 8s infinite ease-in-out; }
-        @keyframes breathe { 0%, 100% { transform: scale(0.9); opacity: 0.3; } 50% { transform: scale(1.1); opacity: 0.5; } }
+        .heartbeat { animation: heart 4s infinite ease-in-out; }
+        @keyframes heart { 0%, 100% { transform: scale(1); opacity: 0.4; } 50% { transform: scale(1.15); opacity: 0.6; } }
 
-        .incinerate { animation: burn 2s forwards ease-in; text-shadow: 0 0 15px #ff8c00; color: #fff; position: absolute; font-size: 1.5rem; font-style: italic; }
-        @keyframes burn { 0% { opacity: 1; transform: scale(1); } 100% { opacity: 0; transform: translateY(-200px) scale(2); filter: blur(20px); } }
+        #talisman {
+            position: absolute; top: 15%; width: 100%; text-align: center;
+            letter-spacing: 0.6em; font-size: 10px; color: #ffd700;
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+            opacity: 0; transition: opacity 3s;
+        }
 
-        #altar-input { background: transparent; border: none; border-bottom: 1px solid rgba(255, 215, 0, 0.2); color: #ffd700; text-align: center; width: 80%; font-size: 1.2rem; outline: none; user-select: text !important; }
-        .loading-orb { animation: gather 1s infinite alternate; filter: blur(15px) !important; opacity: 0.9 !important; }
-        @keyframes gather { from { transform: scale(1); } to { transform: scale(1.3); } }
+        .incinerate { animation: burn 2s forwards ease-in; color: #fff; position: absolute; font-size: 1.2rem; font-style: italic; }
+        @keyframes burn { 0% { opacity: 1; transform: scale(1); } 100% { opacity: 0; transform: translateY(-300px) scale(0); } }
+
+        input { background: transparent; border: none; border-bottom: 1px solid #333; color: #ffd700; text-align: center; width: 70%; font-size: 1rem; outline: none; user-select: text !important; }
     </style>
 </head>
-<body class="flex items-center justify-center h-screen">
+<body class="flex flex-col items-center justify-center h-screen">
 
-    <div id="temple-altar" class="flex flex-col items-center justify-center p-10 text-center w-full">
-        <div id="orb" class="pulsing mb-20"></div>
-        
-        <div id="offering-rite" class="w-full transition-opacity duration-1000">
-            <p class="mb-10 text-yellow-100/30 tracking-[0.3em] text-[10px] uppercase">Name the burden you release...</p>
-            <input type="text" id="altar-input" placeholder="..." onkeydown="if(event.key==='Enter') makeOffering()">
+    <div id="talisman"></div>
+    <div id="orb" class="heartbeat"></div>
+    
+    <div id="altar-ui" class="mt-24 w-full text-center px-10">
+        <div id="offering-area">
+            <p class="mb-8 text-yellow-100/20 tracking-widest text-[9px] uppercase">Burn the lead, find the gold</p>
+            <input type="text" id="altar-input" placeholder="..." onkeydown="if(event.key==='Enter') transform()">
         </div>
 
-        <div id="sacred-seed" class="hidden max-w-md px-6">
-            <p class="text-yellow-500 text-3xl mb-8">ॐ</p>
-            <p id="oracle-text" class="italic text-lg text-yellow-100/80 leading-relaxed"></p>
-            <button onclick="location.reload()" class="mt-12 text-[9px] tracking-[0.4em] text-yellow-900 uppercase">Return to Stillness</button>
+        <div id="oracle-box" class="hidden mt-8">
+            <p id="oracle-text" class="italic text-yellow-100/70 text-sm leading-loose"></p>
+            <button onclick="resetAltar()" class="mt-12 text-[8px] tracking-[0.5em] text-yellow-900 uppercase">Acknowledge</button>
         </div>
     </div>
 
     <script>
-        async function makeOffering() {
+        async function transform() {
             const input = document.getElementById('altar-input');
             const burden = input.value;
             if (!burden) return;
 
-            // 1. Visual Incineration
+            // Incineration
             const flame = document.createElement('div');
-            flame.innerText = burden;
-            flame.className = 'incinerate';
+            flame.innerText = burden; flame.className = 'incinerate';
             document.body.appendChild(flame);
+            
             input.value = '';
-            document.getElementById('offering-rite').style.opacity = "0";
-
-            // 2. Start AI "Meditation" (Loading State)
+            document.getElementById('offering-area').classList.add('opacity-0');
             const orb = document.getElementById('orb');
-            orb.classList.remove('pulsing');
-            orb.classList.add('loading-orb');
+            orb.style.filter = "blur(10px)"; orb.style.opacity = "1";
 
             try {
-                // We call the Netlify function we're about to create
-                const response = await fetch('/.netlify/functions/oracle', {
-                    method: 'POST',
-                    body: JSON.stringify({ burden })
-                });
+                const response = await fetch('/.netlify/functions/oracle', { method: 'POST', body: JSON.stringify({ burden }) });
                 const data = await response.json();
 
-                // 3. Reveal the Divine Response
                 setTimeout(() => {
                     flame.remove();
-                    orb.classList.remove('loading-orb');
-                    orb.style.opacity = "0.1"; // Dim the light to focus on the word
-                    document.getElementById('offering-rite').classList.add('hidden');
+                    orb.style.filter = "blur(30px)"; orb.style.opacity = "0.4";
+                    
+                    // Display Wisdom
+                    document.getElementById('offering-area').classList.add('hidden');
                     document.getElementById('oracle-text').innerText = data.reply;
-                    document.getElementById('sacred-seed').classList.remove('hidden');
+                    document.getElementById('oracle-box').classList.remove('hidden');
+                    
+                    // Set the Talisman (The Sigil)
+                    const talisman = document.getElementById('talisman');
+                    talisman.innerText = data.sigil;
+                    talisman.style.opacity = "0.8";
                 }, 2000);
+            } catch (e) { console.error(e); }
+        }
 
-            } catch (err) {
-                console.error(err);
-                document.getElementById('oracle-text').innerText = "The connection to the void is thin. Breathe and try again.";
-            }
+        function resetAltar() {
+            document.getElementById('oracle-box').classList.add('hidden');
+            document.getElementById('offering-area').classList.remove('hidden', 'opacity-0');
         }
     </script>
 </body>
