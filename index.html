@@ -3,134 +3,55 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Jyothis | The Living Sun</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <title>Jyothis | The Pure Light</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         * { -webkit-touch-callout: none; -webkit-user-select: none; user-select: none; touch-action: none; }
-        body { background: #000; color: #f0e68c; margin: 0; overflow: hidden; font-family: 'Georgia', serif; }
+        body { background: #000; color: #f0e68c; overflow: hidden; font-family: 'Georgia', serif; }
         
-        canvas { position: fixed; top: 0; left: 0; z-index: 1; }
-
-        #ui-layer {
-            position: relative; z-index: 10;
-            display: flex; flex-direction: column;
-            align-items: center; justify-content: center;
-            height: 100vh; width: 100vw; pointer-events: none;
+        #orb {
+            width: 260px; height: 260px;
+            background: radial-gradient(circle, #fff7ad 0%, #ffd700 20%, #ff8c00 50%, transparent 80%);
+            border-radius: 50%; filter: blur(40px);
+            transition: all 4s ease-in-out; opacity: 0.35;
         }
 
-        #interaction-zone { pointer-events: auto; text-align: center; }
+        .heartbeat { animation: heart 6s infinite ease-in-out; }
+        @keyframes heart { 0%, 100% { transform: scale(0.95); opacity: 0.3; } 50% { transform: scale(1.05); opacity: 0.5; } }
 
         #sigil-display {
             letter-spacing: 0.8em; font-size: 11px; color: #ffd700;
-            text-shadow: 0 0 20px rgba(255, 215, 0, 0.9);
+            text-shadow: 0 0 15px rgba(255, 215, 0, 0.7);
             margin-bottom: 20px; opacity: 0; transition: opacity 2s;
         }
 
-        input { 
-            background: transparent; border: none; 
-            border-bottom: 1px solid rgba(255,215,0,0.1); 
-            color: #ffd700; text-align: center; width: 80%; 
-            font-size: 1.2rem; outline: none; user-select: text !important;
-            transition: border 1s;
-        }
+        .incinerate { animation: burn 2.5s forwards ease-in; color: #fff; position: absolute; font-size: 1.5rem; font-style: italic; }
+        @keyframes burn { 0% { opacity: 1; transform: scale(1); } 100% { opacity: 0; transform: translateY(-400px) scale(0); filter: blur(20px); } }
 
-        .incinerate { 
-            animation: burn 2.5s forwards ease-in; color: #fff; 
-            position: absolute; font-size: 1.5rem; font-style: italic; 
-            z-index: 20; pointer-events: none;
-        }
-        @keyframes burn { 0% { opacity: 1; } 100% { opacity: 0; transform: translateY(-400px) scale(0); filter: blur(20px); } }
+        input { background: transparent; border: none; border-bottom: 1px solid rgba(255,215,0,0.1); color: #ffd700; text-align: center; width: 80%; font-size: 1.2rem; outline: none; user-select: text !important; transition: border 1s; }
+        input:focus { border-bottom: 1px solid rgba(255,215,0,0.4); }
     </style>
 </head>
-<body>
+<body class="flex items-center justify-center h-screen">
 
-    <div id="ui-layer">
-        <div id="interaction-zone" class="w-full max-w-md px-6">
-            
-            <div id="offering-area" class="transition-opacity duration-1000">
-                <input type="text" id="altar-input" placeholder="Sacrifice to the Sun..." onkeydown="if(event.key==='Enter') transform()">
-                <p class="mt-8 text-[8px] tracking-[0.4em] text-yellow-900/50 uppercase">Input the weight of your mind</p>
+    <div id="main-container" class="flex flex-col items-center justify-center w-full text-center px-6">
+        
+        <div id="orb" class="heartbeat cursor-pointer" onclick="resetAltar()"></div>
+        
+        <div id="interaction-zone" class="mt-16 w-full max-w-md">
+            <div id="offering-area">
+                <input type="text" id="altar-input" placeholder="Release into the fire..." onkeydown="if(event.key==='Enter') transform()">
             </div>
 
             <div id="oracle-box" class="hidden">
                 <div id="sigil-display" class="uppercase"></div>
-                <p id="oracle-text" class="italic text-yellow-100/80 text-lg leading-relaxed"></p>
-                <p class="mt-12 text-[8px] tracking-[0.4em] text-yellow-900/50 uppercase cursor-pointer pointer-events-auto" onclick="resetAltar()">Tap to Return</p>
+                <p id="oracle-text" class="italic text-yellow-100/80 text-lg leading-relaxed px-4"></p>
+                <p class="mt-12 text-[8px] tracking-[0.4em] text-yellow-900/50 uppercase">Tap the Light to return</p>
             </div>
         </div>
     </div>
 
     <script>
-        // --- THREE.JS 3D ENGINE ---
-        let scene, camera, renderer, sun, corona;
-        
-        function init3D() {
-            scene = new THREE.Scene();
-            camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-            renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-            renderer.setSize(window.innerWidth, window.innerHeight);
-            document.body.appendChild(renderer.domElement);
-
-            // Create the Core Sun
-            const geometry = new THREE.SphereGeometry(1.5, 64, 64);
-            const material = new THREE.MeshStandardMaterial({
-                color: 0xffd700,
-                emissive: 0xff8c00,
-                emissiveIntensity: 2,
-                roughness: 0.2,
-                metalness: 1
-            });
-            sun = new THREE.Mesh(geometry, material);
-            scene.add(sun);
-
-            // Create the Bloom/Glow (Corona)
-            const spriteMaterial = new THREE.SpriteMaterial({
-                map: new THREE.CanvasTexture(generateGlowTexture()),
-                color: 0xffaa00, transparent: true, blending: THREE.AdditiveBlending
-            });
-            corona = new THREE.Sprite(spriteMaterial);
-            corona.scale.set(6, 6, 1);
-            scene.add(corona);
-
-            const light = new THREE.PointLight(0xffd700, 2, 10);
-            light.position.set(0, 0, 2);
-            scene.add(light);
-
-            camera.position.z = 5;
-            animate();
-        }
-
-        function generateGlowTexture() {
-            const canvas = document.createElement('canvas');
-            canvas.width = 256; canvas.height = 256;
-            const ctx = canvas.getContext('2d');
-            const gradient = ctx.createRadialGradient(128, 128, 0, 128, 128, 128);
-            gradient.addColorStop(0, 'rgba(255, 255, 255, 1)');
-            gradient.addColorStop(0.2, 'rgba(255, 215, 0, 0.6)');
-            gradient.addColorStop(0.5, 'rgba(255, 140, 0, 0.2)');
-            gradient.addColorStop(1, 'rgba(0, 0, 0, 0)');
-            ctx.fillStyle = gradient;
-            ctx.fillRect(0, 0, 256, 256);
-            return canvas;
-        }
-
-        function animate() {
-            requestAnimationFrame(animate);
-            sun.rotation.y += 0.005;
-            sun.rotation.x += 0.002;
-            const pulse = 1 + Math.sin(Date.now() * 0.001) * 0.05;
-            corona.scale.set(6 * pulse, 6 * pulse, 1);
-            renderer.render(scene, camera);
-        }
-
-        window.addEventListener('resize', () => {
-            camera.aspect = window.innerWidth / window.innerHeight;
-            camera.updateProjectionMatrix();
-            renderer.setSize(window.innerWidth, window.innerHeight);
-        });
-
-        // --- ALCHEMY LOGIC ---
         async function transform() {
             const input = document.getElementById('altar-input');
             const burden = input.value;
@@ -138,25 +59,26 @@
 
             const flame = document.createElement('div');
             flame.innerText = burden; flame.className = 'incinerate';
-            flame.style.left = '50%'; flame.style.top = '50%';
             document.body.appendChild(flame);
             
             input.value = '';
             document.getElementById('offering-area').style.opacity = "0";
+            const orb = document.getElementById('orb');
+            orb.classList.remove('heartbeat');
+            orb.style.transform = "scale(1.2)"; orb.style.opacity = "0.8";
 
-            // Intensify Sun during API call
-            sun.material.emissiveIntensity = 10;
-            
             try {
                 const response = await fetch('/.netlify/functions/oracle', { method: 'POST', body: JSON.stringify({ burden }) });
                 const data = await response.json();
 
                 setTimeout(() => {
                     flame.remove();
-                    sun.material.emissiveIntensity = 2;
+                    orb.style.transform = "scale(0.8)"; orb.style.opacity = "0.2";
+                    
                     document.getElementById('offering-area').classList.add('hidden');
                     document.getElementById('sigil-display').innerText = data.sigil;
                     document.getElementById('oracle-text').innerText = data.reply;
+                    
                     document.getElementById('oracle-box').classList.remove('hidden');
                     setTimeout(() => { document.getElementById('sigil-display').style.opacity = "1"; }, 500);
                 }, 2000);
@@ -164,12 +86,13 @@
         }
 
         function resetAltar() {
+            if(document.getElementById('oracle-box').classList.contains('hidden')) return;
             document.getElementById('oracle-box').classList.add('hidden');
+            document.getElementById('sigil-display').style.opacity = "0";
             document.getElementById('offering-area').classList.remove('hidden');
             document.getElementById('offering-area').style.opacity = "1";
+            document.getElementById('orb').classList.add('heartbeat');
         }
-
-        init3D();
     </script>
 </body>
 </html>
