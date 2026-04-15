@@ -1,8 +1,5 @@
 exports.handler = async (event) => {
-    // Only allow POST requests
-    if (event.httpMethod !== "POST") {
-        return { statusCode: 405, body: "Method Not Allowed" };
-    }
+    if (event.httpMethod !== "POST") return { statusCode: 405, body: "Method Not Allowed" };
 
     try {
         const { burden } = JSON.parse(event.body);
@@ -10,39 +7,26 @@ exports.handler = async (event) => {
 
         const response = await fetch('https://api.openai.com/v1/chat/completions', {
             method: 'POST',
-            headers: {
-                'Authorization': `Bearer ${API_KEY}`,
-                'Content-Type': 'application/json'
-            },
+            headers: { 'Authorization': `Bearer ${API_KEY}`, 'Content-Type': 'application/json' },
             body: JSON.stringify({
                 model: "gpt-4o",
                 messages: [
                     { 
                         role: "system", 
-                        content: "You are a Cyber-Taoist Master. The user is sacrificing a burden to the fire. Use the wisdom of the Tao Te Ching and Alan Watts. Respond in exactly 2 sentences. Be divine, direct, and poetic. Address their specific pain but dissolve it into the infinite." 
+                        content: "You are a Cyber-Taoist Master. Analyze the user's burden. Respond with a JSON object containing: 1. 'reply' (2 poetic sentences of wisdom) and 2. 'sigil' (A 2-3 word power-phrase in all caps that summarizes the transformation). Example: { 'reply': '...', 'sigil': 'UNBOUND WATER' }" 
                     },
-                    { 
-                        role: "user", 
-                        content: `I sacrifice this burden: ${burden}` 
-                    }
-                ]
+                    { role: "user", content: `Sacrifice: ${burden}` }
+                ],
+                response_format: { type: "json_object" }
             })
         });
 
         const data = await response.json();
-
-        if (!response.ok) {
-            throw new Error(data.error ? data.error.message : 'OpenAI API Error');
-        }
-
         return {
             statusCode: 200,
-            body: JSON.stringify({ reply: data.choices[0].message.content })
+            body: data.choices[0].message.content // This sends the JSON back
         };
     } catch (error) {
-        return {
-            statusCode: 500,
-            body: JSON.stringify({ error: error.message })
-        };
+        return { statusCode: 500, body: JSON.stringify({ error: error.message }) };
     }
 };
