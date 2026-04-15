@@ -3,156 +3,144 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Jyothis | The Valley</title>
+    <title>Jyothis | The Altar</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
+        /* THE SACRED SHIELD */
         * {
             -webkit-touch-callout: none; -webkit-user-select: none;
             user-select: none; outline: none; -webkit-tap-highlight-color: transparent;
             touch-action: none;
         }
 
-        body { background-color: #050505; color: #f0f0f0; overflow: hidden; font-family: 'Courier New', Courier, monospace; }
-        
-        #static-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: url('https://upload.wikimedia.org/wikipedia/commons/5/5a/Static_noise.gif');
-            opacity: 0.1; mix-blend-mode: screen; pointer-events: none;
+        body { 
+            background: radial-gradient(circle at center, #0a0a0a 0%, #000 100%);
+            color: #f0e68c; overflow: hidden; font-family: 'Georgia', serif; 
         }
 
-        /* The Orb - Optimized for Level 1 */
+        /* The Incandescent Orb (The Jyothis) */
         #orb {
-            width: 180px; height: 180px;
-            background: radial-gradient(circle, #ffd700 0%, #ff8c00 40%, transparent 70%);
-            border-radius: 50%; filter: blur(20px);
-            transition: all 2s cubic-bezier(0.4, 0, 0.2, 1);
-            opacity: 0.2; transform: scale(0.8);
+            width: 240px; height: 240px;
+            background: radial-gradient(circle, #fff7ad 0%, #ffd700 30%, #ff8c00 60%, transparent 80%);
+            border-radius: 50%; filter: blur(35px);
+            transition: all 4s cubic-bezier(0.4, 0, 0.2, 1);
+            opacity: 0.3; transform: scale(0.9);
+            box-shadow: 0 0 100px rgba(255, 215, 0, 0.1);
         }
 
-        .unlocked #orb {
-            opacity: 0.8; transform: scale(0.6) translateY(-150px); /* Moves up to become header */
-            filter: blur(10px);
+        /* Golden Ratio Breathing Pulse */
+        .pulsing { animation: breathe 6.18s infinite ease-in-out; }
+        @keyframes breathe {
+            0%, 100% { transform: scale(0.9); opacity: 0.3; filter: blur(35px); }
+            50% { transform: scale(1.05); opacity: 0.5; filter: blur(25px); }
         }
 
-        /* Smoke Animation for Words */
-        .smoke-away {
-            animation: smoke 3s forwards ease-out;
-            pointer-events: none;
+        /* Incineration Effect */
+        .incinerate {
+            animation: burn 2.5s forwards ease-in;
+            text-shadow: 0 0 10px #ff8c00, 0 0 20px #ffd700;
         }
 
-        @keyframes smoke {
-            0% { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
-            100% { opacity: 0; transform: translateY(-100px) scale(2); filter: blur(20px); }
+        @keyframes burn {
+            0% { opacity: 1; transform: scale(1); filter: blur(0); color: #fff; }
+            50% { transform: scale(1.2) translateY(-20px); color: #ff4500; filter: blur(2px); }
+            100% { opacity: 0; transform: scale(0.5) translateY(-150px); filter: blur(20px); }
         }
 
-        input {
-            background: transparent; border-bottom: 1px solid #444;
-            color: #ffd700; text-align: center; width: 100%;
-            outline: none; padding: 10px; font-size: 1.2rem;
-            user-select: text !important; /* Allow typing */
+        #altar-input {
+            background: transparent; border: none;
+            border-bottom: 1px solid rgba(255, 215, 0, 0.2);
+            color: #ffd700; text-align: center; width: 80%;
+            font-style: italic; font-size: 1.5rem; letter-spacing: 0.1em;
+            user-select: text !important;
         }
+
+        .fade-in { animation: fadeIn 3s forwards; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
     </style>
 </head>
 <body class="flex items-center justify-center h-screen">
 
-    <div id="static-overlay"></div>
-
-    <div id="level-0" class="text-center z-10 transition-opacity duration-1000">
-        <div class="relative flex items-center justify-center">
-            <div id="orb" class="pulsing"></div>
-        </div>
-        <div id="instruction" class="mt-16 tracking-[0.3em] text-[10px] uppercase opacity-40">
-            Hold the Light to Yield.
-        </div>
-        <div id="manifesto" class="hidden mt-10 p-6">
-            <p class="italic text-yellow-100/60">"The valley spirit never dies."</p>
-            <button onclick="enterLevel1()" class="mt-10 px-8 py-3 border border-yellow-700/50 text-yellow-600 text-[10px] tracking-[0.2em] uppercase">
-                Begin Level 1
+    <div id="temple-gate" class="text-center z-10">
+        <div id="orb" class="pulsing mx-auto"></div>
+        <div id="gate-text" class="mt-20 fade-in">
+            <p class="tracking-[0.5em] text-[10px] uppercase text-yellow-600/60 mb-8">The Light Awaits Your Presence</p>
+            <p class="italic text-yellow-100/40 text-sm px-10 leading-relaxed">"Stop the searching. <br> The treasure is in the stillness."</p>
+            <button onclick="openAltar()" class="mt-16 px-12 py-4 border border-yellow-900/30 text-yellow-700 text-[10px] tracking-[0.3em] uppercase hover:bg-yellow-500/5 transition-all">
+                Enter the Altar
             </button>
         </div>
     </div>
 
-    <div id="level-1" class="hidden absolute inset-0 z-20 flex flex-col items-center justify-center p-8 text-center">
-        <div class="mb-12 opacity-60 text-[10px] tracking-widest uppercase">
-            Quest: The Intercept <br>
-            <span id="counter" class="text-yellow-500">Progress: 0 / 3</span>
+    <div id="temple-altar" class="hidden absolute inset-0 z-20 flex flex-col items-center justify-center p-10 text-center bg-black/40">
+        <div id="altar-orb" class="w-32 h-32 rounded-full blur-xl bg-yellow-500/20 mb-20 transition-all duration-[5000ms]"></div>
+        
+        <div id="offering-rite">
+            <p class="mb-12 text-yellow-100/30 tracking-[0.2em] text-[11px] uppercase">What will you sacrifice to the fire?</p>
+            <input type="text" id="altar-input" placeholder="Name your burden..." onkeydown="if(event.key==='Enter') makeOffering()">
+            <p class="mt-8 text-[9px] text-yellow-900 tracking-widest uppercase">Release it into the flame (Press Enter)</p>
         </div>
 
-        <div id="input-area" class="w-full max-w-xs">
-            <p class="mb-4 text-sm text-gray-500 italic">What weight do you carry right now?</p>
-            <input type="text" id="stressor-input" placeholder="..." onkeydown="if(event.key==='Enter') processWord()">
-            <p class="mt-4 text-[9px] text-gray-600 uppercase tracking-tighter">Press Enter to dissolve</p>
-        </div>
-
-        <div id="level-complete" class="hidden text-yellow-500 animate-pulse">
-            Level 1 Complete. <br> The Butterfly awaits.
+        <div id="sacred-seed" class="hidden fade-in">
+            <p class="text-yellow-500 text-2xl">ॐ</p>
+            <p class="mt-6 italic text-sm text-yellow-100/60 leading-relaxed" id="oracle-text"></p>
         </div>
     </div>
 
     <script>
-        let holdTimer;
-        let intercepts = 0;
         const orb = document.getElementById('orb');
-        const level0 = document.getElementById('level-0');
-        const level1 = document.getElementById('level-1');
-        const inputField = document.getElementById('stressor-input');
-
-        // Stage 0: Handling the Hold
-        function startHold(e) {
-            if (e.cancelable) e.preventDefault();
-            if (document.body.classList.contains('unlocked')) return;
-            orb.style.transform = "scale(1.2)"; orb.style.opacity = "1";
-            holdTimer = setTimeout(() => {
-                document.getElementById('instruction').style.display = 'none';
-                document.getElementById('manifesto').classList.remove('hidden');
-            }, 3000);
-        }
-
-        function cancelHold() {
-            if (document.body.classList.contains('unlocked')) return;
-            clearTimeout(holdTimer);
-            orb.style.transform = "scale(0.8)"; orb.style.opacity = "0.2";
-        }
-
-        // Stage 1: Transition to Dashboard
-        function enterLevel1() {
-            document.body.classList.add('unlocked');
-            level0.classList.add('opacity-0');
+        const altarOrb = document.getElementById('altar-orb');
+        
+        function openAltar() {
+            document.getElementById('temple-gate').classList.add('opacity-0');
             setTimeout(() => {
-                level0.classList.add('hidden');
-                level1.classList.remove('hidden');
-            }, 1000);
+                document.getElementById('temple-gate').style.display = 'none';
+                document.getElementById('temple-altar').classList.remove('hidden');
+            }, 2000);
         }
 
-        // The "Alchemy": Dissolving the word
-        function processWord() {
-            const word = inputField.value;
+        function makeOffering() {
+            const input = document.getElementById('altar-input');
+            const word = input.value;
             if (!word) return;
 
-            // Create "Smoke" element
-            const smoke = document.createElement('div');
-            smoke.innerText = word;
-            smoke.className = 'absolute text-xl text-yellow-500 smoke-away';
-            document.body.appendChild(smoke);
+            // Incineration Ritual
+            const flame = document.createElement('div');
+            flame.innerText = word;
+            flame.className = 'absolute text-2xl incinerate';
+            document.body.appendChild(flame);
+            
+            // The Orb Feeds on the Sacrifice
+            altarOrb.style.boxShadow = "0 0 100px #ff8c00";
+            altarOrb.style.background = "radial-gradient(circle, #fff, #ffd700)";
+            altarOrb.style.transform = "scale(1.5)";
 
-            // Reset input and increment
-            inputField.value = '';
-            intercepts++;
-            document.getElementById('counter').innerText = `Progress: ${intercepts} / 3`;
-
-            if (intercepts >= 3) {
-                document.getElementById('input-area').classList.add('hidden');
-                document.getElementById('level-complete').classList.remove('hidden');
-            }
-
-            // Clean up smoke element
-            setTimeout(() => smoke.remove(), 3000);
+            input.value = '';
+            
+            setTimeout(() => {
+                flame.remove();
+                showOracle();
+            }, 2500);
         }
 
-        document.addEventListener('touchstart', startHold, { passive: false });
-        document.addEventListener('touchend', cancelHold);
-        document.addEventListener('mousedown', startHold);
-        document.addEventListener('mouseup', cancelHold);
+        const koans = [
+            "Your burden was never yours to carry. It was only a shadow.",
+            "In the center of the storm, the light remains untouched.",
+            "Yield to the river, and the river will carry you home.",
+            "The mountain does not fear the wind. Why do you?"
+        ];
+
+        function showOracle() {
+            document.getElementById('offering-rite').classList.add('hidden');
+            const oracleText = document.getElementById('oracle-text');
+            oracleText.innerText = koans[Math.floor(Math.random() * koans.length)];
+            document.getElementById('sacred-seed').classList.remove('hidden');
+            
+            // Reset the Orb to a steady, divine glow
+            altarOrb.style.transform = "scale(1)";
+            altarOrb.style.opacity = "0.9";
+            altarOrb.style.filter = "blur(40px)";
+        }
     </script>
 </body>
 </html>
