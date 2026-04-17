@@ -2,7 +2,10 @@ import requests
 import json
 
 def handler(event, context):
-    # Get the keyword from the URL
+    # Check if this is just a health check call
+    if event.get('httpMethod') == 'OPTIONS':
+        return {'statusCode': 200, 'headers': {'Access-Control-Allow-Origin': '*'}}
+
     params_in = event.get('queryStringParameters', {})
     keyword = params_in.get('q', 'acoustic panel')
     
@@ -17,14 +20,11 @@ def handler(event, context):
         response = requests.get(url, headers=headers, params=params)
         data = response.json()
         
-        # Navigation path for Otapi BatchSearchItemsFrame
-        result_layer = data.get('Result', {})
-        items_outer = result_layer.get('Items', {})
-        items_inner = items_outer.get('Items', {})
-        content = items_inner.get('Content', [])
+        # Exact path navigation for Otapi Batch
+        items_list = data.get('Result', {}).get('Items', {}).get('Items', {}).get('Content', [])
         
         results = []
-        for item in content[:3]:
+        for item in items_list[:3]:
             price_info = item.get('Price', {})
             price = price_info.get('OriginalPrice', price_info.get('Value', 0))
             results.append({
@@ -38,8 +38,7 @@ def handler(event, context):
             "statusCode": 200,
             "headers": {
                 "Content-Type": "application/json",
-                "Access-Control-Allow-Origin": "*",
-                "Access-Control-Allow-Headers": "Content-Type"
+                "Access-Control-Allow-Origin": "*"
             },
             "body": json.dumps(results)
         }
