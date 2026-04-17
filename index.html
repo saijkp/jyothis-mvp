@@ -3,146 +3,139 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>IK Eng LTD | UKCA Acoustic Solutions | Manchester & Guangzhou</title>
+    <title>IK ENG LTD | Sourcing Terminal</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        :root {
-            --primary: #0a192f;
-            --accent: #d4af37;
-            --light: #f4f4f4;
-            --text: #333;
-        }
-
-        body { font-family: 'Segoe UI', Roboto, sans-serif; margin: 0; color: var(--text); line-height: 1.6; }
+        :root { --primary: #0a192f; --accent: #d4af37; --success: #27ae60; --white: #ffffff; }
+        body { font-family: 'Inter', sans-serif; margin: 0; background: #f8f9fa; color: var(--primary); }
         
-        /* Header & Navigation */
-        header { 
-            background: #fff; padding: 15px 5%; display: flex; justify-content: space-between; 
-            align-items: center; position: sticky; top: 0; z-index: 1000; box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        /* Header */
+        nav { background: var(--white); padding: 1rem 5%; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+        .logo { font-size: 1.5rem; font-weight: 800; }
+        .logo span { color: var(--accent); }
+
+        /* Hero & Search */
+        .hero { background: var(--primary); color: white; padding: 80px 5%; text-align: center; }
+        .search-box { max-width: 700px; margin: 30px auto; background: white; padding: 8px; border-radius: 50px; display: flex; box-shadow: 0 10px 25px rgba(0,0,0,0.2); }
+        .search-box input { flex: 1; border: none; padding: 15px 25px; font-size: 1.1rem; outline: none; border-radius: 50px; }
+        .search-box button { background: var(--accent); color: var(--primary); border: none; padding: 15px 35px; border-radius: 50px; font-weight: 700; cursor: pointer; transition: 0.3s; }
+        .search-box button:hover { transform: scale(1.05); background: #c5a02c; }
+
+        /* Results Container */
+        #results { max-width: 1100px; margin: -50px auto 50px; padding: 0 20px; }
+        .loading { text-align: center; color: white; display: none; margin-bottom: 20px; }
+
+        /* Audit Card */
+        .card { 
+            background: white; border-radius: 12px; padding: 25px; margin-bottom: 20px; 
+            display: grid; grid-template-columns: 180px 1fr 250px; gap: 25px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1); border-left: 5px solid var(--accent);
+            animation: fadeIn 0.5s ease forwards;
         }
-        .brand { font-size: 1.5rem; font-weight: 800; color: var(--primary); }
-        .brand span { color: var(--accent); }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
         
-        /* Hero Section */
-        .hero { 
-            background: linear-gradient(rgba(10,25,47,0.8), rgba(10,25,47,0.8)), url('YOUR_HERO_IMAGE_URL.jpg') center/cover;
-            color: white; padding: 120px 5%; text-align: center;
-        }
-        .hero h1 { font-size: 3.5rem; margin-bottom: 20px; }
-        .hero p { font-size: 1.2rem; max-width: 800px; margin: 0 auto 30px; }
+        .card img { width: 100%; border-radius: 8px; object-fit: cover; aspect-ratio: 1; }
+        .info h3 { margin: 0 0 10px; font-size: 1.1rem; line-height: 1.4; }
+        .prices { display: flex; justify-content: space-between; background: #fcfcfc; padding: 15px; border-radius: 8px; }
+        .price-item { text-align: center; }
+        .price-item label { display: block; font-size: 0.7rem; color: #777; text-transform: uppercase; margin-bottom: 5px; }
+        .price-item span { font-size: 1.2rem; font-weight: 800; }
+        .saving { color: var(--success); font-weight: 900; }
 
-        /* Experience Bar */
-        .exp-bar { background: var(--accent); color: var(--primary); padding: 15px; text-align: center; font-weight: bold; }
-
-        /* Product Gallery */
-        .gallery { padding: 80px 5%; display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; }
-        .gallery-item { border-radius: 8px; overflow: hidden; background: #eee; height: 300px; position: relative; }
-        .gallery-item img { width: 100%; height: 100%; object-fit: cover; }
-        .gallery-label { position: absolute; bottom: 0; background: rgba(0,0,0,0.7); color: white; width: 100%; padding: 10px; font-size: 0.8rem; }
-
-        /* Trust Section */
-        .trust-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 40px; padding: 80px 5%; background: var(--light); }
-        .card { background: white; padding: 30px; border-radius: 8px; border-bottom: 4px solid var(--accent); }
-
-        /* WhatsApp Button */
-        .whatsapp-float {
-            position: fixed; bottom: 40px; right: 40px; background: #25d366; color: white;
-            padding: 15px 25px; border-radius: 50px; text-decoration: none; font-weight: bold;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.2); z-index: 1000; display: flex; align-items: center;
-        }
-
-        /* Forms */
-        .contact-section { padding: 80px 5%; max-width: 900px; margin: 0 auto; }
-        input, select, textarea { width: 100%; padding: 15px; margin-bottom: 15px; border: 1px solid #ddd; border-radius: 5px; }
-        .btn { background: var(--primary); color: white; padding: 18px 40px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; width: 100%; }
-
-        footer { background: var(--primary); color: white; padding: 60px 5%; text-align: center; }
+        .cta-box { display: flex; flex-direction: column; justify-content: center; gap: 10px; border-left: 1px solid #eee; padding-left: 20px; }
+        .btn-wa { background: #25d366; color: white; text-align: center; padding: 12px; border-radius: 6px; text-decoration: none; font-weight: 700; font-size: 0.8rem; }
+        
+        footer { text-align: center; padding: 40px; color: #666; font-size: 0.8rem; }
     </style>
 </head>
 <body>
 
-<header>
-    <div class="brand">IK ENG <span>LTD</span></div>
-    <div class="contact-info" style="font-size: 0.9rem;">
-        <strong>Manchester Office:</strong> +44 7767 990007
-    </div>
-</header>
+<nav>
+    <div class="logo">IK ENG <span>LTD</span></div>
+    <div style="font-weight: 600; font-size: 0.8rem;"><i class="fa-solid fa-anchor"></i> 25Y SOURCING EXPERTISE</div>
+</nav>
 
-<div class="exp-bar">
-    25 YEARS OF DIRECT CHINA SOURCING & MANUFACTURING EXCELLENCE
+<div class="hero">
+    <h1>1688 Factory Terminal</h1>
+    <p>Live Price Audits: From China Factory Floor to Manchester Building Site</p>
+    <div class="search-box">
+        <input type="text" id="query" placeholder="Paste product name (e.g. Acoustic Wood Panel)...">
+        <button onclick="search()">AUDIT PRICE</button>
+    </div>
+    <div id="loader" class="loading"><i class="fas fa-spinner fa-spin"></i> Accessing 1688 Database...</div>
 </div>
 
-<section class="hero">
-    <h1>UKCA Certified Acoustic Slat Panels</h1>
-    <p>Premium Commercial Wall Solutions. Direct Factory Access via our Guangzhou Inspection Team. Stocked & Managed from Manchester.</p>
-    <a href="#quote" class="btn" style="width: auto; display: inline-block;">REQUEST SPECIFICATION PACK</a>
-</section>
-
-<section class="trust-grid">
-    <div class="card">
-        <h3>Manchester Based</h3>
-        <p>IK Eng LTD provides local accountability. No timezone issues, no offshore payment risks. We are your UK-legal contract partner.</p>
+<div id="results">
     </div>
-    <div class="card">
-        <h3>Panyu QC Office</h3>
-        <p>Our permanent Guangzhou team performs live video audits, moisture-level checks, and density verification for every container batch.</p>
-    </div>
-    <div class="card">
-        <h3>The 25-Year Edge</h3>
-        <p>A quarter-century of factory relationships ensures we get "First-Run" quality and priority production slots for large-scale UK projects.</p>
-    </div>
-</section>
-
-<div class="section-title" style="text-align: center; padding-top: 50px;">
-    <h2>Product Gallery & Certification</h2>
-</div>
-
-<section class="gallery">
-    <div class="gallery-item">
-        <img src="YOUR_IMAGE_LINK_1.jpg" alt="Acoustic Panel Walnut">
-        <div class="gallery-label">Premium Walnut Veneer - Project Ready</div>
-    </div>
-    <div class="gallery-item">
-        <img src="YOUR_IMAGE_LINK_2.jpg" alt="Fire Test Certificate">
-        <div class="gallery-label">UKCA / BS EN 13501-1 Fire Certification</div>
-    </div>
-    <div class="gallery-item">
-        <img src="YOUR_IMAGE_LINK_3.jpg" alt="Warehouse Loading">
-        <div class="gallery-label">Our Panyu Team - Container Loading Audit</div>
-    </div>
-    <div class="gallery-item">
-        <img src="YOUR_IMAGE_LINK_4.jpg" alt="Close up texture">
-        <div class="gallery-label">High-Density 1800g/m² Recycled PET Felt</div>
-    </div>
-</section>
-
-<section class="contact-section" id="quote">
-    <div style="text-align: center; margin-bottom: 40px;">
-        <h2>Project Inquiry & Specification</h2>
-        <p>Architects and Builders: Submit your project requirements below for a DDP Manchester quote.</p>
-    </div>
-    <form action="YOUR_FORM_HANDLER_OR_EMAIL" method="POST">
-        <input type="text" placeholder="Contact Name" required>
-        <input type="text" placeholder="Company Name (Architectural/Building Firm)" required>
-        <select required>
-            <option value="">Project Type</option>
-            <option value="commercial">Commercial Office / Hospitality</option>
-            <option value="residential">Luxury Residential Developer</option>
-            <option value="public">Public Sector / Education</option>
-        </select>
-        <input type="number" placeholder="Estimated Quantity (Panels or Sqm)">
-        <textarea rows="5" placeholder="Special Requirements (e.g. Custom 3000mm heights, Fire Rating needs)"></textarea>
-        <button type="submit" class="btn">SEND INQUIRY</button>
-    </form>
-</section>
-
-<a href="https://wa.me/447767990007" class="whatsapp-float" target="_blank">
-    <span>Chat on WhatsApp</span>
-</a>
 
 <footer>
-    <p><strong>IK ENG LTD</strong><br>Manchester, United Kingdom | Panyu District, Guangzhou, China</p>
-    <p style="font-size: 0.8rem; opacity: 0.7;">Company Registered in England & Wales. Specialists in High-Volume Acoustic Procurement since 2001.</p>
+    <p>IK ENG LTD | Manchester HQ | Panyu QC Branch<br>Transparent Sourcing & UKCA Compliance Management</p>
 </footer>
+
+<script>
+    async function search() {
+        const query = document.getElementById('query').value;
+        const resultsDiv = document.getElementById('results');
+        const loader = document.getElementById('loader');
+
+        if (!query) return alert("Enter a search term");
+
+        // Clear and Show Loading
+        resultsDiv.innerHTML = '';
+        loader.style.display = 'block';
+
+        try {
+            // Talk to your Netlify Python Function
+            const response = await fetch(`/.netlify/functions/search?q=${encodeURIComponent(query)}`);
+            const data = await response.json();
+
+            loader.style.display = 'none';
+
+            if (!data || data.length === 0) {
+                resultsDiv.innerHTML = '<p style="text-align:center">No matches found. Try more general keywords.</p>';
+                return;
+            }
+
+            data.forEach(item => {
+                const retail = (item.landed_gbp * 4.5).toFixed(2);
+                const saving = (((retail - item.landed_gbp) / retail) * 100).toFixed(0);
+
+                resultsDiv.innerHTML += `
+                    <div class="card">
+                        <img src="${item.img}" alt="Product Image">
+                        <div class="info">
+                            <h3>${item.title.substring(0, 90)}...</h3>
+                            <div class="prices">
+                                <div class="price-item">
+                                    <label>Factory</label>
+                                    <span>¥${item.price_cny}</span>
+                                </div>
+                                <div class="price-item">
+                                    <label>Landed MCR</label>
+                                    <span style="color:var(--primary)">£${item.landed_gbp}</span>
+                                </div>
+                                <div class="price-item">
+                                    <label>UK Showroom</label>
+                                    <span style="text-decoration:line-through; color:#999">£${retail}</span>
+                                    <div class="saving">SAVE ${saving}%</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="cta-box">
+                            <a href="https://wa.me/447767990007" class="btn-wa">VERIFY THIS FACTORY</a>
+                            <p style="font-size:0.65rem; color:#888; text-align:center">IK Eng LTD covers QC, Fire-Safety, & Sea Freight DDP.</p>
+                        </div>
+                    </div>
+                `;
+            });
+
+        } catch (error) {
+            console.error(error);
+            loader.style.display = 'none';
+            alert("Search currently unavailable. Check your API key/Netlify Logs.");
+        }
+    }
+</script>
 
 </body>
 </html>
