@@ -73,68 +73,72 @@
 </footer>
 
 <script>
-    async function search() {
-        const query = document.getElementById('query').value;
-        const resultsDiv = document.getElementById('results');
-        const loader = document.getElementById('loader');
+async function search() {
+    const query = document.getElementById('query').value;
+    const resultsDiv = document.getElementById('results');
+    const loader = document.getElementById('loader');
 
-        if (!query) return alert("Enter a search term");
+    if (!query) return alert("Enter a search term");
 
-        // Clear and Show Loading
-        resultsDiv.innerHTML = '';
-        loader.style.display = 'block';
+    resultsDiv.innerHTML = '';
+    loader.style.display = 'block';
 
-        try {
-            // Talk to your Netlify Python Function
-            const response = await fetch(`/.netlify/functions/search?q=${encodeURIComponent(query)}`);
-            const data = await response.json();
+    // DEBUG: Log the call
+    console.log("🚀 IK ENG Audit: Calling function for keyword:", query);
 
-            loader.style.display = 'none';
+    try {
+        // We use a relative path to ensure it hits the Netlify function correctly
+        const response = await fetch(`/.netlify/functions/search?q=${encodeURIComponent(query)}`);
+        
+        console.log("📡 Server Status:", response.status);
+        
+        if (!response.ok) {
+            const errText = await response.text();
+            console.error("❌ Function Error Detail:", errText);
+            throw new Error(`Server returned ${response.status}`);
+        }
 
-            if (!data || data.length === 0) {
-                resultsDiv.innerHTML = '<p style="text-align:center">No matches found. Try more general keywords.</p>';
-                return;
-            }
+        const data = await response.json();
+        console.log("📦 Data Received:", data);
 
-            data.forEach(item => {
-                const retail = (item.landed_gbp * 4.5).toFixed(2);
-                const saving = (((retail - item.landed_gbp) / retail) * 100).toFixed(0);
+        loader.style.display = 'none';
 
-                resultsDiv.innerHTML += `
-                    <div class="card">
-                        <img src="${item.img}" alt="Product Image">
-                        <div class="info">
-                            <h3>${item.title.substring(0, 90)}...</h3>
-                            <div class="prices">
-                                <div class="price-item">
-                                    <label>Factory</label>
-                                    <span>¥${item.price_cny}</span>
-                                </div>
-                                <div class="price-item">
-                                    <label>Landed MCR</label>
-                                    <span style="color:var(--primary)">£${item.landed_gbp}</span>
-                                </div>
-                                <div class="price-item">
-                                    <label>UK Showroom</label>
-                                    <span style="text-decoration:line-through; color:#999">£${retail}</span>
-                                    <div class="saving">SAVE ${saving}%</div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="cta-box">
-                            <a href="https://wa.me/447767990007" class="btn-wa">VERIFY THIS FACTORY</a>
-                            <p style="font-size:0.65rem; color:#888; text-align:center">IK Eng LTD covers QC, Fire-Safety, & Sea Freight DDP.</p>
+        if (!data || data.length === 0) {
+            resultsDiv.innerHTML = '<p style="text-align:center">Zero matches in database. Try a broader term.</p>';
+            return;
+        }
+
+        data.forEach(item => {
+            const retail = (item.landed_gbp * 4.5).toFixed(2);
+            const saving = (((retail - item.landed_gbp) / retail) * 100).toFixed(0);
+
+            resultsDiv.innerHTML += `
+                <div class="card">
+                    <img src="${item.img}" alt="Product Image">
+                    <div class="info">
+                        <h3>${item.title.substring(0, 90)}...</h3>
+                        <div class="prices">
+                            <div class="price-item"><label>Factory</label><span>¥${item.price_cny}</span></div>
+                            <div class="price-item"><label>Landed MCR</label><span style="color:var(--primary)">£${item.landed_gbp}</span></div>
+                            <div class="price-item"><label>UK Showroom</label><span style="text-decoration:line-through; color:#999">£${retail}</span><div class="saving">SAVE ${saving}%</div></div>
                         </div>
                     </div>
-                `;
-            });
+                    <div class="cta-box">
+                        <a href="https://wa.me/447767990007" class="btn-wa">VERIFY FACTORY</a>
+                        <p style="font-size:0.65rem; color:#888; text-align:center">IK Eng LTD | DDP Manchester</p>
+                    </div>
+                </div>`;
+        });
 
-        } catch (error) {
-            console.error(error);
-            loader.style.display = 'none';
-            alert("Search currently unavailable. Check your API key/Netlify Logs.");
-        }
+    } catch (error) {
+        console.error("🔥 Frontend Crash:", error);
+        loader.style.display = 'none';
+        resultsDiv.innerHTML = `<div style="text-align:center; color:red;">
+            <p><strong>System Error:</strong> ${error.message}</p>
+            <p style="font-size:0.8rem">Check browser console (F12) for technical logs.</p>
+        </div>`;
     }
+}
 </script>
 
 </body>
